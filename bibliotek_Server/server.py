@@ -1,7 +1,14 @@
 import socket
 from threading import Thread
 import Classes
+librarian = Classes.Librarian()
 clients = {}
+
+def create_media(media_type, media_info):
+    media_type = media_type.strip("/")
+    if media_type == "Book":
+        librarian.get_Books_From_Client(media_info = media_info)
+        librarian.save_To_File()
 
 def receive(connection):
     while True:
@@ -10,6 +17,7 @@ def receive(connection):
         media_type, media_info = media_info.split("/",1)
         print("Type of Media :", media_type)
         print("Recived :", media_info)
+        create_media(media_type, media_info)
     connection.close()
 
 

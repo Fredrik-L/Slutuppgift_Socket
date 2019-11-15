@@ -188,6 +188,19 @@ class Librarian():
                 movie.value_Today = value_today
                 self.movie_list.append(movie)
 
+    def get_Books_From_Client(self, media_info):
+        splitted_media_info = media_info.split(",")
+
+        title = splitted_media_info[0]
+        writer = splitted_media_info[1]
+        pages = int(splitted_media_info[2])
+        price = float(splitted_media_info[3])
+        year = int(splitted_media_info[4])
+
+        book = Book(title,writer,pages,price,year)
+        
+        self.book_list.append(book)
+
 class Media_Object():
     """Superclass of all the Media.
     
