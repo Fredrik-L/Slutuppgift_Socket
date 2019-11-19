@@ -9,11 +9,20 @@ def create_media(media_type, media_info):
     if media_type == "Book":
         librarian.get_Books_From_Client(media_info = media_info)
         librarian.save_To_File()
+    if media_type == "Cd":
+        librarian.get_CDs_From_Client(media_info = media_info)
+        librarian.save_To_File()
+    if media_type == "Movie":
+        librarian.get_Movies_From_Client(media_info = media_info)
+        librarian.save_To_File()
 
 def receive(connection):
     while True:
         media_info = connection.recv(1024)
         media_info = media_info.decode()
+        if media_info == "quit":
+            del(clients[connection])
+            break
         media_type, media_info = media_info.split("/",1)
         print("Type of Media :", media_type)
         print("Recived :", media_info)

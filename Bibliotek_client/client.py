@@ -3,16 +3,44 @@ from appJar import gui
 from threading import Thread
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-def create_book():
-    x = app.getAllEntries()
-    y = list(x.values())
-    sentence = "Book/"
-    for words in y:
-        sentence += str(words + ",")
+def create_Book():
+    entryValue = get_Entries()
+    send_media("Book", entryValue)
+def create_Cd():
+    entryValue = get_Entries()
+    send_media("Cd", entryValue)
+def create_Movie():
+    entryValue = get_Entries()
+    send_media("Movie",entryValue)
+def send_media(media_Type, media_Info):
+    """Send the media to the server. Inputs are media type and the media info.
+        It will send a string ex "Book/title,writer,pages,price,year".
+        Then clear all the entries.  
+    """
+    send_Str = media_Type + "/"
+    for words in media_Info:
+        send_Str += str(words + ",")
+    send_Str = send_Str.rstrip(",")
+    app.infoBox("Sent","Du har skickat :" + send_Str)
+    s.send(send_Str.encode())
+    app.clearAllEntries()
 
-    sentence = sentence.rstrip(",")
-    app.infoBox("hej", sentence)
-    s.send(sentence.encode())
+def get_Entries():
+    """Gets all the Entries and returns the values as a list. 
+    """
+    return_values = []
+    allEntries = app.getAllEntries()
+    entriesValue = list(allEntries.values())
+    for value in entriesValue:
+        if value != "":
+            return_values.append(value)
+    return return_values
+def close():
+    s.send(b"quit")
+    myThread.join()
+    s.close()
+    app.stop()
+
 def click(btn):
     """Buttons Book, Cd, Movie
 
@@ -33,6 +61,7 @@ def start_Conn(host,port):
     s.connect((host,port))
     myThread = Thread(target = listen_server, args=(s,))
     myThread.start()
+    return myThread
 
 app = gui("Bibliotek", "400x400")
 
@@ -51,7 +80,7 @@ app.addLabel("Purchased price of Book")
 app.addEntry("purchased_Price_Book")
 app.addLabel("Purchase year")
 app.addEntry("purchased_Year_Book")
-app.addButton("Add Book", create_book)
+app.addButton("Send Book", create_Book)
 
 app.stopFrame()
 
@@ -68,7 +97,7 @@ app.addLabel("Cd length in min")
 app.addEntry("length_Cd")
 app.addLabel("Purchased price of Cd")
 app.addEntry("purchased_Price_Cd")
-app.addButton("Add Cd", create_book)
+app.addButton("Send Cd", create_Cd)
 app.stopFrame()
 
 app.startFrame("Movie_Frame")
@@ -86,7 +115,7 @@ app.addLabel("Purchase Year")
 app.addEntry("purchased_Year_Movie")
 app.addLabel("Damage of Movie(1-10)")
 app.addEntry("dmg_movie")
-app.addButton("Add Moive", create_book)
+app.addButton("Send Moive", create_Movie)
 app.stopFrame()
 app.stopFrameStack()
 
@@ -94,8 +123,9 @@ app.startFrame("menu_frame", column = 1 , row = 0)
 app.addButton("Book", click)
 app.addButton("Cd", click)
 app.addButton("Movie", click)
+app.addButton("Close", close)
+app.clearAllEntries()
 
-
-start_Conn("127.0.0.1", 12345)
+myThread = start_Conn("127.0.0.1", 12345)
 
 app.go()

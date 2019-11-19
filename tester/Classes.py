@@ -200,31 +200,7 @@ class Librarian():
         book = Book(title,writer,pages,price,year)
         
         self.book_list.append(book)
-    def get_CDs_From_Client(self, media_info):
-        splitted_line = media_info.split(",")
 
-        title = splitted_line[0]
-        artist = splitted_line[1]
-        amount_Songs = int(splitted_line[2])
-        length = float(splitted_line[3])
-        price = float(splitted_line[4])
-        copys_cd = self.check_Existing_CD(title,artist)
-
-        cd = Cd(title,artist,amount_Songs,length,price,copys_cd)
-        
-        self.cd_list.append(cd)
-    def get_Movies_From_Client(self, media_info):
-        splitted_line = media_info.split(",")
-        title = splitted_line[0]
-        director = splitted_line[1]
-        length = float(splitted_line[2])
-        price = float(splitted_line[3])
-        year = int(splitted_line[4])
-        damage = int(splitted_line[5])
-
-        movie = Movie(title,director,length,price,year,damage)
-        
-        self.movie_list.append(movie)
 class Media_Object():
     """Superclass of all the Media.
     
