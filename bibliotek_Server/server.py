@@ -1,6 +1,7 @@
 import socket
 from threading import Thread
 import Classes
+import pickle
 librarian = Classes.Librarian()
 clients = {}
 
@@ -18,17 +19,37 @@ def create_media(media_type, media_info):
 
 def receive(connection):
     while True:
-        media_info = connection.recv(1024)
-        media_info = media_info.decode()
-        if media_info == "quit":
+        data = connection.recv(1024)
+        data = data.decode()
+        if data == "quit":
             del(clients[connection])
             break
-        media_type, media_info = media_info.split("/",1)
+        if data == "Show_Media/":
+            librarian.get_All_Media_From_File()
+            book_list = []
+            for book in librarian.book_list:
+                book_str = Classes.Book.get_Book_Attribute(book)
+                book_list.append(book_str)
+
+            book_send_List = pickle.dumps(book_list)
+            connection.send(book_send_List)
+            """for book in librarian.book_list:
+                book_str = Classes.Book.get_Book_Attribute(book)
+                connection.send(b"Book/" + book_str.encode())
+
+            for cd in librarian.cd_list:
+                cd_str = Classes.Cd.get_Cd_Attribute(cd)
+                connection.send(b"Cd/" + cd_str.encode())
+
+            for movie in librarian.movie_list:
+                movie_str = Classes.Movie.get_Movie_Attribute(movie)
+                connection.send(b"Movie/" + movie_str.encode())
+                """
+        media_type, media_info = data.split("/",1)
         print("Type of Media :", media_type)
         print("Recived :", media_info)
         create_media(media_type, media_info)
     connection.close()
-
 
 def Main():
     host = "127.0.0.1"
@@ -45,5 +66,6 @@ def Main():
         clients[connection] = addres
         myThread = Thread(target = receive, args=(connection,))
         myThread.start()
-
-Main()
+        return s
+    
+s = Main()

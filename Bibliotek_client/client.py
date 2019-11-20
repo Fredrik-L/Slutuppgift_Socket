@@ -1,7 +1,7 @@
 import socket
 from appJar import gui
 from threading import Thread
-
+import pickle
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def create_Book():
     entryValue = get_Entries()
@@ -49,13 +49,30 @@ def click(btn):
     if btn == "Book": app.selectFrame("Media", 0)
     if btn == "Cd": app.selectFrame("Media", 1)
     if btn == "Movie": app.selectFrame("Media",2)
+def show_media():
+    s.send(b"Show_Media/")
+    
 def listen_server(server):
     while True:
         data = server.recv(1024)
         if not data:
+            print("hejdå")
             break
-        if data == b"quit":
-            break
+        else:
+            recv_str = pickle.loads(data)
+            print(recv_str)
+            app.addListItem("Media Objects", "Books")
+            app.addListItems("Media Objects", recv_str)
+            """
+            data = data.decode()
+            media_Type, media_Info = data.split("/",1)
+            media_Type = media_Type.strip("/")
+            app.clearListBox("Media Objects")
+            if media_Type == "Book":
+                app.addListItem("Media Objects", media_Type)
+                app.updateListBox("Media Objects", media_Info)
+            """
+        #print(data)
 def start_Conn(host,port):
 
     s.connect((host,port))
@@ -63,7 +80,7 @@ def start_Conn(host,port):
     myThread.start()
     return myThread
 
-app = gui("Bibliotek", "400x400")
+app = gui("Bibliotek", "500x500")
 
 app.startFrameStack("Media")
 
@@ -86,7 +103,7 @@ app.stopFrame()
 
 app.startFrame("Cd_Frame")
 app.setSticky("WE")
-app.addLabel("Adding a CD")
+app.addLabel("Adding a Cd")
 app.addLabel("Title of Cd")
 app.addEntry("title_Cd")
 app.addLabel("Artist")
@@ -123,9 +140,12 @@ app.startFrame("menu_frame", column = 1 , row = 0)
 app.addButton("Book", click)
 app.addButton("Cd", click)
 app.addButton("Movie", click)
+app.addButton("Show all media", show_media)
 app.addButton("Close", close)
-app.clearAllEntries()
+app.stopFrame()
 
+app.startFrame("listbox_frame",colspan=2)
+app.addListBox("Media Objects")
 myThread = start_Conn("127.0.0.1", 12345)
 
 app.go()

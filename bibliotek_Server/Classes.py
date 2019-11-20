@@ -139,6 +139,11 @@ class Librarian():
     #It will take a line from the file, split it and save the words into a list.
     #Then it will add each word into the right attribute for the object.
     #It can do this because i know the order of the attributes.
+    def get_All_Media_From_File(self):
+        self.get_Books_From_File()
+        self.get_CDs_From_File()
+        self.get_Movies_From_File()
+
     def get_Books_From_File(self):
         """Reads info from file and creates a book with the info."""
         with open ("Books.txt", "r") as book_file:
