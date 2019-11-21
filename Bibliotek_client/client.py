@@ -37,7 +37,7 @@ def get_Entries():
             return_values.append(value)
     return return_values
 def close():
-    s.send(b"quit")
+    s.send(b"quit//")
     myThread.join()
     s.close()
     app.stop()
@@ -56,14 +56,21 @@ def show_media():
     
 def listen_server(server):
     while True:
-        data = server.recv(4024)
-        
+        data = server.recv(1024)
+        try:
+            data = data.decode()
+            cmd, message = data.split("//", 1)
+            app.addListItem("msg", message)
+        except ValueError:
+            pass
         if not data:
             print("hejdå")
             break
-        else:
+        try:
             recv_str = pickle.loads(data)
             app.addListItems("Media Objects", recv_str)
+        except TypeError:
+            pass
 
 def start_Conn(host,port):
 

@@ -21,7 +21,9 @@ def receive(connection):
         data = connection.recv(1024)
         data = data.decode()
         cmd, message = data.split("//", 1)
-        print("Command recived: " + cmd)
+        address = clients[connection]
+
+        print("Recived Command: " + cmd + ". From: " + address[0])
         if cmd == "quit":
             del(clients[connection])
             break
@@ -56,13 +58,17 @@ def receive(connection):
         if cmd == "create":
             media_Type, media_Info = message.split("//", 1) 
             print("Recived media: " + message)
-            connection.bro
             create_media(media_Type, media_Info)
+            broadcast(media_Type)
 
     connection.close()
+def broadcast(media_type):
+    message = "broadcast//Has added a new: " + media_type
+    for connection in clients:
+        connection.send(message.encode())
 
 def Main():
-    host = "127.0.0.1"
+    host = ""
     port = 12345
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((host,port))
@@ -74,8 +80,10 @@ def Main():
         connection, addres = s.accept()
         print("Connectd to : ", addres[0])
         clients[connection] = addres
+        
         myThread = Thread(target = receive, args=(connection,))
         myThread.start()
-        return s
     
-s = Main()
+    s.close()
+    
+Main()
