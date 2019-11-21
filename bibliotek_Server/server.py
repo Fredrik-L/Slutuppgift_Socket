@@ -6,7 +6,6 @@ librarian = Classes.Librarian()
 clients = {}
 
 def create_media(media_type, media_info):
-    media_type = media_type.strip("/")
     if media_type == "Book":
         librarian.get_Books_From_Client(media_info = media_info)
         librarian.save_To_File()
@@ -21,34 +20,45 @@ def receive(connection):
     while True:
         data = connection.recv(1024)
         data = data.decode()
-        if data == "quit":
+        cmd, message = data.split("//", 1)
+        print("Command recived: " + cmd)
+        if cmd == "quit":
             del(clients[connection])
             break
-        if data == "Show_Media/":
+        if cmd == "show_Media":
+            librarian.book_list.clear()
+            librarian.cd_list.clear()
+            librarian.movie_list.clear()
+
             librarian.get_All_Media_From_File()
-            book_list = []
-            for book in librarian.book_list:
-                book_str = Classes.Book.get_Book_Attribute(book)
-                book_list.append(book_str)
 
-            book_send_List = pickle.dumps(book_list)
-            connection.send(book_send_List)
-            """for book in librarian.book_list:
-                book_str = Classes.Book.get_Book_Attribute(book)
-                connection.send(b"Book/" + book_str.encode())
+            send_list = []
+            if len(librarian.book_list) > 0:
+                send_list.append("Books")
+                for book in librarian.book_list:
+                    book_str = Classes.Book.get_Book_Attribute(book)
+                    send_list.append(book_str)
 
-            for cd in librarian.cd_list:
-                cd_str = Classes.Cd.get_Cd_Attribute(cd)
-                connection.send(b"Cd/" + cd_str.encode())
+            if len(librarian.cd_list) > 0:
+                send_list.append("Cds")
+                for cd in librarian.cd_list:
+                    cd_str = Classes.Cd.get_Cd_Attribute(cd)
+                    send_list.append(cd_str)
 
-            for movie in librarian.movie_list:
-                movie_str = Classes.Movie.get_Movie_Attribute(movie)
-                connection.send(b"Movie/" + movie_str.encode())
-                """
-        media_type, media_info = data.split("/",1)
-        print("Type of Media :", media_type)
-        print("Recived :", media_info)
-        create_media(media_type, media_info)
+            if len(librarian.movie_list) > 0:
+                send_list.append("Movies")
+                for movie in librarian.movie_list:
+                    movie_str = Classes.Movie.get_Movie_Attribute(movie)
+                    send_list.append(movie_str)
+
+            connection.send(pickle.dumps(send_list))
+
+        if cmd == "create":
+            media_Type, media_Info = message.split("//", 1) 
+            print("Recived media: " + message)
+            connection.bro
+            create_media(media_Type, media_Info)
+
     connection.close()
 
 def Main():

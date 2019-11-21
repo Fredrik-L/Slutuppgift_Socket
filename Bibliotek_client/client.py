@@ -2,6 +2,7 @@ import socket
 from appJar import gui
 from threading import Thread
 import pickle
+import time
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def create_Book():
     entryValue = get_Entries()
@@ -17,7 +18,7 @@ def send_media(media_Type, media_Info):
         It will send a string ex "Book/title,writer,pages,price,year".
         Then clear all the entries.  
     """
-    send_Str = media_Type + "/"
+    send_Str = "create//" + media_Type + "//"
     for words in media_Info:
         send_Str += str(words + ",")
     send_Str = send_Str.rstrip(",")
@@ -50,29 +51,20 @@ def click(btn):
     if btn == "Cd": app.selectFrame("Media", 1)
     if btn == "Movie": app.selectFrame("Media",2)
 def show_media():
-    s.send(b"Show_Media/")
+    s.send(b"show_Media//")
+    app.clearListBox("Media Objects")
     
 def listen_server(server):
     while True:
-        data = server.recv(1024)
+        data = server.recv(4024)
+        
         if not data:
             print("hejdå")
             break
         else:
             recv_str = pickle.loads(data)
-            print(recv_str)
-            app.addListItem("Media Objects", "Books")
             app.addListItems("Media Objects", recv_str)
-            """
-            data = data.decode()
-            media_Type, media_Info = data.split("/",1)
-            media_Type = media_Type.strip("/")
-            app.clearListBox("Media Objects")
-            if media_Type == "Book":
-                app.addListItem("Media Objects", media_Type)
-                app.updateListBox("Media Objects", media_Info)
-            """
-        #print(data)
+
 def start_Conn(host,port):
 
     s.connect((host,port))
@@ -80,7 +72,7 @@ def start_Conn(host,port):
     myThread.start()
     return myThread
 
-app = gui("Bibliotek", "500x500")
+app = gui("Bibliotek", "550x550")
 
 app.startFrameStack("Media")
 
@@ -146,6 +138,10 @@ app.stopFrame()
 
 app.startFrame("listbox_frame",colspan=2)
 app.addListBox("Media Objects")
-myThread = start_Conn("127.0.0.1", 12345)
+app.stopFrame()
 
+app.startFrame("msg_frame",column=2, row = 0, rowspan=2)
+app.addListBox("msg")
+app.stopFrame()
+myThread = start_Conn("127.0.0.1", 12345)
 app.go()
