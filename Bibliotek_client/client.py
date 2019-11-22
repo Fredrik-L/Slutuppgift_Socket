@@ -3,6 +3,7 @@ from appJar import gui
 from threading import Thread
 import pickle
 import time
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def create_Book():
     entryValue = get_Entries()
@@ -60,7 +61,17 @@ def listen_server(server):
         try:
             data = data.decode()
             cmd, message = data.split("//", 1)
-            app.addListItem("msg", message)
+            if cmd == "login":
+                if message == "succeed":
+                    app.hideSubWindow("Login")
+                    app.showSubWindow("client_App")
+
+                if message == "failed":
+                    app.infoBox("Error", "Wrong user info.")
+
+            if cmd == "broadcast":
+                app.addListItem("msg", message)
+
         except ValueError:
             pass
         if not data:
@@ -78,9 +89,34 @@ def start_Conn(host,port):
     myThread = Thread(target = listen_server, args=(s,))
     myThread.start()
     return myThread
+def press(btn):
+    if btn == "Exit":
+        close()
+    if btn == "Login":
+        username = app.getEntry("Username")
+        password = app.getEntry("Password")
+        #if username or password == "":
+        if username == "" or password == "":
+            app.infoBox("Error", "You need to enter username and password.")
+        else:
+            message = "login//" + username + "," + password
+            s.send(message.encode())
+            app.clearAllEntries()
 
-app = gui("Bibliotek", "550x550")
 
+
+app = gui("Bibliotek", "600x600")
+
+app.startSubWindow("Login")
+app.addLabel("Login for Fish Library!")
+app.setSticky("NESW")
+app.addLabelEntry("Username")
+app.addLabelSecretEntry("Password")
+app.addButtons(["Login", "Exit"], press)
+app.stopSubWindow()
+
+app.startSubWindow("client_App")
+app.setSticky("NESW")
 app.startFrameStack("Media")
 
 app.startFrame("Book_Frame")
@@ -136,11 +172,13 @@ app.stopFrame()
 app.stopFrameStack()
 
 app.startFrame("menu_frame", column = 1 , row = 0)
+
 app.addButton("Book", click)
 app.addButton("Cd", click)
 app.addButton("Movie", click)
 app.addButton("Show all media", show_media)
 app.addButton("Close", close)
+
 app.stopFrame()
 
 app.startFrame("listbox_frame",colspan=2)
@@ -151,4 +189,6 @@ app.startFrame("msg_frame",column=2, row = 0, rowspan=2)
 app.addListBox("msg")
 app.stopFrame()
 myThread = start_Conn("127.0.0.1", 12345)
-app.go()
+app.stopSubWindow()
+
+app.go(startWindow = "Login")

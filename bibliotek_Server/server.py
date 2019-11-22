@@ -4,6 +4,11 @@ import Classes
 import pickle
 librarian = Classes.Librarian()
 clients = {}
+user_info = {
+    "Fredrik": "Fredrik1",
+    "Erik": "Erik1",
+    "Janne": "Janne1"
+    }
 
 def create_media(media_type, media_info):
     if media_type == "Book":
@@ -23,7 +28,12 @@ def receive(connection):
         cmd, message = data.split("//", 1)
         address = clients[connection]
 
-        print("Recived Command: " + cmd + ". From: " + address[0])
+        if cmd == "login":
+            username, password = message.split(",")
+            if user_info.get(username) == password:
+                connection.send(b"login//succeed")
+            else:
+                connection.send(b"login//failed")
         if cmd == "quit":
             del(clients[connection])
             break
@@ -59,11 +69,13 @@ def receive(connection):
             media_Type, media_Info = message.split("//", 1) 
             print("Recived media: " + message)
             create_media(media_Type, media_Info)
-            broadcast(media_Type)
+            broadcast(media_Type, username)
+        
+        print("Recived Command: " + cmd + ". From ip: " + address[0] + " Username: " + username)
 
     connection.close()
-def broadcast(media_type):
-    message = "broadcast//Has added a new: " + media_type
+def broadcast(media_type, username):
+    message = "broadcast//" + username + " added a new: " + media_type
     for connection in clients:
         connection.send(message.encode())
 
