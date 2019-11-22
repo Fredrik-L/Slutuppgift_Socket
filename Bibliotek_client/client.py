@@ -74,8 +74,10 @@ def listen_server(server):
 
         except ValueError:
             pass
+
         if not data:
             print("hejdå")
+            server.close()
             break
         try:
             recv_str = pickle.loads(data)
@@ -117,6 +119,7 @@ app.stopSubWindow()
 
 app.startSubWindow("client_App")
 app.setSticky("NESW")
+
 app.startFrameStack("Media")
 
 app.startFrame("Book_Frame")

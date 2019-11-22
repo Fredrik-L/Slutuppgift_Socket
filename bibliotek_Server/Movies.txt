@@ -1,2 +1,0 @@
-testbok,testbok,2.0,2.0,2,0.0,2
-testerik,erik,2.0,2.0,2,0.0,2

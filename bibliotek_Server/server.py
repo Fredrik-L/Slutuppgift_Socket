@@ -2,6 +2,7 @@ import socket
 from threading import Thread
 import Classes
 import pickle
+
 librarian = Classes.Librarian()
 clients = {}
 user_info = {
@@ -37,6 +38,7 @@ def receive(connection):
         if cmd == "quit":
             del(clients[connection])
             break
+
         if cmd == "show_Media":
             librarian.book_list.clear()
             librarian.cd_list.clear()
