@@ -6,9 +6,9 @@ import pickle
 librarian = Classes.Librarian()
 clients = {}
 user_info = {
-    "Fredrik": "Fredrik1",
-    "Erik": "Erik1",
-    "Janne": "Janne1"
+    "Fredrik": "1",
+    "Erik": "1",
+    "Janne": "1"
     }
 
 def create_media(media_type, media_info):
@@ -28,6 +28,8 @@ def receive(connection):
         data = data.decode()
         cmd, message = data.split("//", 1)
         address = clients[connection]
+        #Row 32 is only when running test, else comment out
+        #username = "Test"
 
         if cmd == "login":
             username, password = message.split(",")
@@ -35,6 +37,8 @@ def receive(connection):
                 connection.send(b"login//succeed")
             else:
                 connection.send(b"login//failed")
+
+        print("Recived Command: " + cmd + ". From ip: " + address[0] + " Username: " + username)
         if cmd == "quit":
             del(clients[connection])
             break
@@ -45,7 +49,7 @@ def receive(connection):
             librarian.movie_list.clear()
 
             librarian.get_All_Media_From_File()
-
+            librarian.sort_list()
             send_list = []
             if len(librarian.book_list) > 0:
                 send_list.append("Books")
@@ -66,6 +70,9 @@ def receive(connection):
                     send_list.append(movie_str)
 
             connection.send(pickle.dumps(send_list))
+            librarian.book_list.clear()
+            librarian.cd_list.clear()
+            librarian.movie_list.clear()
 
         if cmd == "create":
             media_Type, media_Info = message.split("//", 1) 
@@ -73,7 +80,7 @@ def receive(connection):
             create_media(media_Type, media_Info)
             broadcast(media_Type, username)
         
-        print("Recived Command: " + cmd + ". From ip: " + address[0] + " Username: " + username)
+
 
     connection.close()
 def broadcast(media_type, username):
@@ -99,5 +106,6 @@ def Main():
         myThread.start()
     
     s.close()
-    
-Main()
+
+if __name__ == '__main__':   
+    Main()

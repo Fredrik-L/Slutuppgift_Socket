@@ -1,19 +1,17 @@
 import unittest
 import socket
-import pickle
+import os
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("127.0.0.1", 12345))
 
 class test_server(unittest.TestCase):
     
-    """def test_listen_server(self):
-        data = "login//succeed"
-        x = test_client.listen_server(data)
-        print(type(x))
-        self.assertEqual("succeed", x)
-    """
-    def test_send(self):
+    def x_test_recive(self):
+        """
+            Only works when its the only tests that sends something.
+            Tests recive func when a clients are logging in. 
+        """
         s.send(b"login//Fredrik,Fredrik1")
         data_login = s.recv(1024)
         data_login = data_login.decode()
@@ -26,13 +24,35 @@ class test_server(unittest.TestCase):
         
 
     def test_broadcast(self):
+        """
+            Needs to have Row 32 in server.py to be able to run.'
+            Tests broadcast func, server recives book. Sends back
+            a broadcast.
+        """
         s.send(b"create//book//Bamse,Astrid,200,500,2018")
         data = s.recv(1024)
         data = data.decode()
-        right_str = "broadcast//Fredrik added a new: book"
+        right_str = "broadcast//Test added a new: book"
         self.assertEqual(right_str,data)
-        
 
+    def test_create_media(self):
+        """
+            Tests that the right information will be writen
+            into the right file when a book is created.
+        """
+        s.send(b"create//Book//Aaaaaa,Astrid,200,500,2015")
+        book_list = []
+        file_name = os.path.dirname(__file__) + "/Books.txt"
+        #Jag måste had med denna print för att testet ska funka.
+        #Om jag tar bort den så får jag error "IndexError: list index out of range"
+        #Jag förstår inte varför en print fixar det.
+        print("")
+        with open(file_name, "r") as f:
+            for book in f:
+                book = book.strip("\n")
+                book_list.append(book)
+        
+        self.assertEqual("Aaaaaa,Astrid,500,200,2015,131.2",book_list[0])
 
     
 unittest.main()

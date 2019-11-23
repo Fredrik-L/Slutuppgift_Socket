@@ -102,7 +102,6 @@ class Librarian():
         self.print_Movie_List()
     def sort_list(self):
         """Sort each object in every list after title."""
-        #Found at internet
         self.book_list.sort(key=lambda book: book.title)
         self.cd_list.sort(key=lambda cd: cd.title)
         self.movie_list.sort(key=lambda movie: movie.title)
@@ -117,13 +116,13 @@ class Librarian():
             Will be separated by ,.
         """
 
-        with open ("Books.txt", "w+") as book_file:
+        with open ("Books.txt", "a+") as book_file:
             for book in self.book_list:
                 book_file.write(book.get_Book_Attribute() + "\n")
-        with open ("Cds.txt", "w+") as cd_file:
+        with open ("Cds.txt", "a+") as cd_file:
             for cd in self.cd_list:
                 cd_file.write(cd.get_Cd_Attribute() + "\n") 
-        with open("Movies.txt", "w+") as movie_file:
+        with open("Movies.txt", "a+") as movie_file:
             for movie in self.movie_list:
                 movie_file.write(movie.get_Movie_Attribute() + "\n")       
     
@@ -148,8 +147,8 @@ class Librarian():
 
     def get_Books_From_File(self):
         """Reads info from file and creates a book with the info."""
-
-        with open ("Books.txt", "r") as book_file:
+        b_file = os.path.dirname(__file__) + "/Books.txt"
+        with open (b_file, "r") as book_file:
             for book_line in book_file:
                 splitted_line = self.get_splited_line(book_line)
 
@@ -165,7 +164,8 @@ class Librarian():
                 self.book_list.append(book)
     def get_CDs_From_File(self):
         """Reads info from file and creates a cd with the info."""
-        with open("Cds.txt", "r") as cd_file:
+        c_file = os.path.dirname(__file__) + "/Cds.txt"
+        with open(c_file, "r") as cd_file:
             for cd_line in cd_file:
                 splitted_line = self.get_splited_line(cd_line)
 
@@ -181,7 +181,8 @@ class Librarian():
                 self.cd_list.append(cd)
     def get_Movies_From_File(self):
         """Reads info from file and creates a movie with the info."""
-        with open("Movies.txt", "r") as movie_file:
+        m_file = os.path.dirname(__file__) + "/Movies.txt"
+        with open(m_file, "r") as movie_file:
             for movie_line in movie_file:
                 splitted_line = self.get_splited_line(movie_line)
                 title = splitted_line[0]
@@ -199,20 +200,20 @@ class Librarian():
     def get_Books_From_Client(self, media_info):
         splitted_media_info = media_info.split(",")
 
-        title = splitted_media_info[0]
-        writer = splitted_media_info[1]
+        title = splitted_media_info[0].capitalize()
+        writer = splitted_media_info[1].capitalize()
         pages = int(splitted_media_info[2])
         price = float(splitted_media_info[3])
         year = int(splitted_media_info[4])
-
+        
         book = Book(title,writer,pages,price,year)
         
         self.book_list.append(book)
     def get_CDs_From_Client(self, media_info):
         splitted_line = media_info.split(",")
 
-        title = splitted_line[0]
-        artist = splitted_line[1]
+        title = splitted_line[0].capitalize()
+        artist = splitted_line[1].capitalize()
         amount_Songs = int(splitted_line[2])
         length = float(splitted_line[3])
         price = float(splitted_line[4])
@@ -223,8 +224,8 @@ class Librarian():
         self.cd_list.append(cd)
     def get_Movies_From_Client(self, media_info):
         splitted_line = media_info.split(",")
-        title = splitted_line[0]
-        director = splitted_line[1]
+        title = splitted_line[0].capitalize()
+        director = splitted_line[1].capitalize()
         length = float(splitted_line[2])
         price = float(splitted_line[3])
         year = int(splitted_line[4])
