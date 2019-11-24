@@ -198,6 +198,10 @@ class Librarian():
                 self.movie_list.append(movie)
 
     def get_Books_From_Client(self, media_info):
+        """
+            Appends the book info to the book list.
+            Input media info.
+        """
         splitted_media_info = media_info.split(",")
 
         title = splitted_media_info[0].capitalize()
@@ -210,6 +214,10 @@ class Librarian():
         
         self.book_list.append(book)
     def get_CDs_From_Client(self, media_info):
+        """
+            Appends the Cd info to the Cd list.
+            Input media info.
+        """        
         splitted_line = media_info.split(",")
 
         title = splitted_line[0].capitalize()
@@ -223,6 +231,10 @@ class Librarian():
         
         self.cd_list.append(cd)
     def get_Movies_From_Client(self, media_info):
+        """
+            Appends the Movie info to the Movie list.
+            Input media info.
+        """
         splitted_line = media_info.split(",")
         title = splitted_line[0].capitalize()
         director = splitted_line[1].capitalize()
