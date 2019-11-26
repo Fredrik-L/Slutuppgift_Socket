@@ -12,7 +12,7 @@ class test_server(unittest.TestCase):
             Only works when its the only tests that sends something.
             Tests recive func when a clients are logging in. 
         """
-        s.send(b"login//Fredrik,Fredrik1")
+        s.send(b"login//Fredrik,1")
         data_login = s.recv(1024)
         data_login = data_login.decode()
         self.assertEqual("login//succeed",data_login)
@@ -25,8 +25,8 @@ class test_server(unittest.TestCase):
 
     def test_broadcast(self):
         """
-            Needs to have Row 32 in server.py to be able to run.'
-            Tests broadcast func, server recives book. Sends back
+            Needs to have Row 43 in server.py to be able to run.'
+            Tests broadcast function, server recives book. Sends back
             a broadcast.
         """
         s.send(b"create//book//Bamse,Astrid,200,500,2018")
@@ -43,10 +43,7 @@ class test_server(unittest.TestCase):
         s.send(b"create//Book//Aaaaaa,Astrid,200,500,2015")
         book_list = []
         file_name = os.path.dirname(__file__) + "/Books.txt"
-        #Jag måste had med denna print för att testet ska funka.
-        #Om jag tar bort den så får jag error "IndexError: list index out of range"
-        #Jag förstår inte varför en print fixar det.
-        print("")
+
         with open(file_name, "r") as f:
             for book in f:
                 book = book.strip("\n")
