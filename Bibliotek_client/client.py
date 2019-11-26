@@ -57,7 +57,7 @@ def show_media():
     
 def listen_server(server):
     while True:
-        data = server.recv(1024)
+        data = server.recv(4024)
         try:
             data = data.decode()
             cmd, message = data.split("//", 1)
@@ -71,7 +71,7 @@ def listen_server(server):
 
             if cmd == "broadcast":
                 app.addListItem("msg", message)
-
+            
         except ValueError:
             pass
 
@@ -97,7 +97,6 @@ def press(btn):
     if btn == "Login":
         username = app.getEntry("Username")
         password = app.getEntry("Password")
-        #if username or password == "":
         if username == "" or password == "":
             app.infoBox("Error", "You need to enter username and password.")
         else:
@@ -107,7 +106,7 @@ def press(btn):
 
 
 
-app = gui("Bibliotek", "600x600")
+app = gui("Bibliotek", "600x700")
 
 app.startSubWindow("Login")
 app.addLabel("Login for Fish Library!")

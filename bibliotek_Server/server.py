@@ -35,7 +35,10 @@ def receive(connection):
         Input is a socket.
     """
     while True:
-        data = connection.recv(1024)
+        data = connection.recv(4024)
+        if not data:
+            del(clients[connection])
+            break
         data = data.decode()
         cmd, message = data.split("//", 1)
         address = clients[connection]
@@ -122,7 +125,7 @@ def Main():
 
     while True:
         connection, addres = s.accept()
-        print("Connectd to : ", addres[0])
+        print("Connectd to : ", addres[1])
         clients[connection] = addres
         
         myThread = Thread(target = receive, args=(connection,))
