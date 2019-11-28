@@ -5,6 +5,7 @@ import pickle
 import time
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#Functions for creating medias
 def create_Book():
     entryValue = get_Entries()
     send_media("Book", entryValue)
@@ -37,7 +38,12 @@ def get_Entries():
         if value != "":
             return_values.append(value)
     return return_values
+
 def close():
+    """
+        Close down the client. Sends a message to the server,
+        and then waits for the threads and closes down.
+    """
     s.send(b"quit//")
     myThread.join()
     s.close()
@@ -51,11 +57,16 @@ def click(btn):
     if btn == "Book": app.selectFrame("Media", 0)
     if btn == "Cd": app.selectFrame("Media", 1)
     if btn == "Movie": app.selectFrame("Media",2)
+
 def show_media():
     s.send(b"show_Media//")
     app.clearListBox("Media Objects")
     
 def listen_server(server):
+    """
+        Listen after data, the data will be made of "cmd//message".
+        Depending on the cmd if will do diffrent things.
+    """
     while True:
         data = server.recv(4024)
         try:
@@ -86,12 +97,18 @@ def listen_server(server):
             pass
 
 def start_Conn(host,port):
-
+    """
+        Will connecnt to the host and port.
+        Then create a thread.
+    """
     s.connect((host,port))
     myThread = Thread(target = listen_server, args=(s,))
     myThread.start()
     return myThread
 def press(btn):
+    """
+        Login buttons.
+    """
     if btn == "Exit":
         close()
     if btn == "Login":
@@ -190,6 +207,7 @@ app.stopFrame()
 app.startFrame("msg_frame",column=2, row = 0, rowspan=2)
 app.addListBox("msg")
 app.stopFrame()
+
 myThread = start_Conn("127.0.0.1", 12345)
 app.stopSubWindow()
 

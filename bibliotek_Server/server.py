@@ -42,7 +42,7 @@ def receive(connection):
         data = data.decode()
         cmd, message = data.split("//", 1)
         address = clients[connection]
-        #Row 43 is only when running test, else comment out
+        #Row 46 is only when running test, else comment out
         #username = "Test"
 
         if cmd == "login":

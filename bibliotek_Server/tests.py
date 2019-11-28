@@ -31,7 +31,7 @@ class test_server(unittest.TestCase):
 
     def test_broadcast(self):
         """
-            Needs to have Row 43 in server.py to be able to run.
+            Needs to have Row 46 in server.py to be able to run.
             Tests broadcast function, server recives book. Sends back
             a broadcast.
         """
@@ -43,7 +43,7 @@ class test_server(unittest.TestCase):
 
     def test_create_media(self):
         """
-            Needs to have Row 43 in server.py to be able to run.
+            Needs to have Row 46 in server.py to be able to run.
             Tests that the right information will be writen
             into the right file when a book is created.
         """
